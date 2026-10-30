@@ -1,0 +1,22 @@
+name: TinyRadar
+main: com.tinyaii.tinyradar.TinyRadar
+version: 1.0.0
+
+api-version: "1.13"
+
+author: TinyAII
+description: 卡顿雷达 - 用大白话告诉你服务器到底哪里卡
+
+commands:
+  tinyradar:
+    description: 卡顿雷达主命令
+    usage: /tinyradar help
+    aliases: [tr, 雷达, 卡顿, radar]
+
+permissions:
+  tinyradar.use:
+    description: 使用雷达的所有命令
+    default: op
+  tinyradar.alert:
+    description: 接收自动卡顿警报
+    default: op

@@ -1,0 +1,152 @@
+# ============================================================
+#  TinyRadar 配置  v1.0.0
+#  卡顿雷达 —— 用大白话告诉你服务器到底哪里卡
+#
+#  改完输入 /tinyradar reload 生效
+# ============================================================
+
+scan:
+  # 每 tick 扫多少个区块。数值大 = 扫得快但单 tick 开销高
+  # 200 个区块按 40/tick 算，5 tick（0.25 秒）扫完，基本感觉不到
+  chunks-per-tick: 40
+
+  # 报告里显示前几名
+  top: 10
+
+  # 自动扫描间隔（秒）。0 = 不自动扫，只靠手动 /tinyradar scan
+  interval-seconds: 300
+
+  # 扫描玩家周围多少区块（半径）。
+  # 没玩家在线时改扫出生点周围（半径取一半）—— 不然空服永远是"没有区块"。
+  radius-around-players: 8
+
+# ---- 卡顿分权重 --------------------------------------------------
+#  卡顿分 = Σ(数量 × 权重) + 红石速率 × redstone-per-second
+#
+#  为什么要加权：300 个掉落物和 30 个村民在数字上差 10 倍，
+#  但实际卡顿可能是村民更狠 —— 所以不能简单数个数。
+weights:
+  entity-default: 1.0
+  tile-default: 0.1
+  redstone-per-second: 0.5
+
+  entities:
+    item: 0.3
+    experience_orb: 0.3
+    arrow: 0.1
+    villager: 3.0
+    wandering_trader: 3.0
+    hopper_minecart: 3.0
+    chest_minecart: 1.5
+    minecart: 1.5
+    armor_stand: 0.5
+    item_frame: 0.15
+    painting: 0.05
+    falling_block: 1.0
+    marker: 0.0
+
+  tiles:
+    hopper: 1.5
+    spawner: 2.0
+    furnace: 0.4
+    blast_furnace: 0.4
+    smoker: 0.4
+    brewing_stand: 0.4
+    beacon: 1.0
+    dispenser: 0.2
+    dropper: 0.2
+    sculk_sensor: 0.5
+    beehive: 0.3
+    bee_nest: 0.3
+    chest: 0.05
+    trapped_chest: 0.05
+    barrel: 0.05
+
+# ---- 判定为「有问题」的门槛（单个区块内） ------------------------
+limits:
+  entity-per-type: 80
+  entity-total: 300
+  tile-per-type: 250
+  tile-total: 600
+
+  # 单独给某些实体/方块实体定更严的上限
+  entities:
+    item: 150
+    experience_orb: 60
+    arrow: 100
+    villager: 30
+    hopper_minecart: 20
+    armor_stand: 60
+
+  tiles:
+    hopper: 120
+    spawner: 8
+    beacon: 10
+    furnace: 120
+    chest: 500
+    barrel: 500
+
+# ---- 红石监测 ----------------------------------------------------
+#  红石机器（高频时钟、活塞阵列）是最常见的隐形卡顿源，
+#  光看实体数是看不出来的，必须单独统计变化频率。
+redstone:
+  enabled: true
+  # 统计窗口（秒）
+  window-seconds: 30
+  # 每秒变化超过这个数就算异常
+  per-second-limit: 40
+
+# ---- 放置者追踪 --------------------------------------------------
+#  记住这些方块是谁放的，诊断时能直接说「这是谁盖的」。
+#  只记录插件装上之后放的；方块被拆会自动清掉记录。
+placer:
+  enabled: true
+  blocks:
+    - hopper
+    - observer
+    - piston
+    - sticky_piston
+    - dispenser
+    - dropper
+    - redstone_wire
+    - repeater
+    - comparator
+    - redstone_torch
+    - daylight_detector
+    - note_block
+    - slime_block
+    - honey_block
+    - furnace
+    - blast_furnace
+    - smoker
+
+# ---- 相关性判定 --------------------------------------------------
+#  卡顿时，只有「最近才涨起来的区域」才值得怀疑。
+#  这个窗口就是"最近"的定义：区块首次超标时间距离现在多久以内。
+correlation:
+  window-seconds: 180
+
+# ---- 自动警报 ----------------------------------------------------
+alert:
+  enabled: true
+  # MSPT 超过这个值开始计数
+  mspt-threshold: 55
+  # 连续多少次采样都超标才报（避免偶发抖动就喊）
+  streak: 3
+  # 采样间隔（秒）
+  sample-seconds: 5
+  # 两次警报之间至少隔多久（秒），防止刷屏
+  cooldown-seconds: 300
+
+# ---- 在线更新检查 ------------------------------------------------
+# 启动后异步查一次有没有新版本，之后每 N 小时一次。失败静默、不拖慢启动。
+# 只提示，不下载、不替换 jar。
+update-check:
+  enabled: true
+  endpoint: "https://bump.tinyaii.cn"
+  app-key: "app_5a2f555560d8117e0ae8d0a2"
+  channel: "stable"
+  timeout-seconds: 3
+  interval-hours: 6
+  # 拥有该权限的人上线时会收到「有新版本」提示
+  notify-permission: "tinyradar.alert"
