@@ -136,7 +136,7 @@ public final class UpdateChecker {
         notifiedConsoleVersion = r.latestVersion;
 
         plugin.getLogger().warning("========================================");
-        plugin.getLogger().warning(" TinyFish 有新版本可用");
+        plugin.getLogger().warning(" " + plugin.getName() + " 有新版本可用");
         plugin.getLogger().warning(" 当前: " + currentVersion() + "  最新: " + r.latestVersion
                 + (r.forceUpdate ? "  (强制更新)" : ""));
         if (!r.publishTime.isEmpty()) {
@@ -196,7 +196,7 @@ public final class UpdateChecker {
             conn.setRequestMethod("GET");
             conn.setConnectTimeout(timeout);
             conn.setReadTimeout(timeout);
-            conn.setRequestProperty("User-Agent", "TinyFish/" + currentVersion());
+            conn.setRequestProperty("User-Agent", plugin.getName() + "/" + currentVersion());
             conn.setRequestProperty("Accept", "application/json");
 
             int code = conn.getResponseCode();
@@ -255,7 +255,7 @@ public final class UpdateChecker {
         }
         notified.put(id, r.latestVersion);
 
-        player.sendMessage(Texts.color("&6[TinyFish] &e有新版本可用：&f"
+        player.sendMessage(Texts.color("&6[" + plugin.getName() + "] &e有新版本可用：&f"
                 + currentVersion() + " &7→ &a" + r.latestVersion));
         if (!r.notes.isEmpty()) {
             String firstLine = r.notes.split("\n")[0];
